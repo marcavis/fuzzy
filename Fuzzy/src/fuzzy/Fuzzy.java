@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Menu;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -37,18 +38,19 @@ public class Fuzzy {
 
 	protected Shell shell;
 	private Text text;
-	private Text text_1;
-	private Text text_2;
-	private Text text_3;
-	private Text text_4;
-	private Text text_5;
-	private Text text_6;
-	private Text text_7;
-	private Text text_8;
-	private Text text_9;
-	private Text text_10;
-	private Text text_11;
+//	private Text text_1;
+//	private Text text_2;
+//	private Text text_3;
+//	private Text text_4;
+//	private Text text_5;
+	private Text textSup1;
+	private Text textNuc1;
+	private Text textSup2;
+	private Text textNuc2;
+	private Text textSup3;
+	private Text textNuc3;
 	private Text text_nomeVarDestino;
+	private ArrayList<Text[]> variaveis;
 
 	/**
 	 * Launch the application.
@@ -129,7 +131,7 @@ public class Fuzzy {
 		tabFolder.setBounds(10, 10, 469, 567);
 		tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		
-		criarAba(tabFolder);
+		criarAba(tabFolder, variaveis);
 		
 		Composite composite_2 = new Composite(composite, SWT.NONE);
 		composite_2.setBounds(485, 28, 475, 514);
@@ -138,18 +140,18 @@ public class Fuzzy {
 		group_1.setBounds(10, 46, 443, 177);
 		
 		Label label = new Label(group_1, SWT.BORDER);
-		label.setText("Sup");
+		label.setText("Supaa");
 		label.setBounds(10, 42, 40, 20);
 		
 		Label label_1 = new Label(group_1, SWT.BORDER);
 		label_1.setText("Nuc");
 		label_1.setBounds(10, 84, 40, 20);
 		
-		text_6 = new Text(group_1, SWT.BORDER);
-		text_6.setBounds(56, 42, 78, 26);
+		textSup1 = new Text(group_1, SWT.BORDER);
+		textSup1.setBounds(56, 42, 78, 26);
 		
-		text_7 = new Text(group_1, SWT.BORDER);
-		text_7.setBounds(56, 82, 78, 26);
+		textNuc1 = new Text(group_1, SWT.BORDER);
+		textNuc1.setBounds(56, 82, 78, 26);
 		
 		Label label_2 = new Label(group_1, SWT.BORDER);
 		label_2.setText("Pouco");
@@ -159,21 +161,21 @@ public class Fuzzy {
 		label_3.setText("M\u00E9dio");
 		label_3.setBounds(174, 16, 54, 20);
 		
-		text_8 = new Text(group_1, SWT.BORDER);
-		text_8.setBounds(161, 42, 78, 26);
+		textSup2 = new Text(group_1, SWT.BORDER);
+		textSup2.setBounds(161, 42, 78, 26);
 		
-		text_9 = new Text(group_1, SWT.BORDER);
-		text_9.setBounds(161, 78, 78, 26);
+		textNuc2 = new Text(group_1, SWT.BORDER);
+		textNuc2.setBounds(161, 78, 78, 26);
 		
 		Label label_4 = new Label(group_1, SWT.BORDER);
 		label_4.setText("Muito");
 		label_4.setBounds(279, 16, 54, 20);
 		
-		text_10 = new Text(group_1, SWT.BORDER);
-		text_10.setBounds(263, 42, 78, 26);
+		textSup3 = new Text(group_1, SWT.BORDER);
+		textSup3.setBounds(263, 42, 78, 26);
 		
-		text_11 = new Text(group_1, SWT.BORDER);
-		text_11.setBounds(263, 78, 78, 26);
+		textNuc3 = new Text(group_1, SWT.BORDER);
+		textNuc3.setBounds(263, 78, 78, 26);
 		
 		Label lblNewLabel_1 = new Label(composite_2, SWT.BORDER);
 		lblNewLabel_1.setAlignment(SWT.CENTER);
@@ -193,8 +195,9 @@ public class Fuzzy {
 
 	}
 	
-	public void criarAba(CTabFolder tabFolder) {
-
+	public void criarAba(CTabFolder tabFolder, ArrayList<Text[]> variaveis) {
+		Text[] estaVariavel = new Text[12];
+		
 		CTabItem tbtmNewItem = new CTabItem(tabFolder, SWT.NONE);
 		tbtmNewItem.setText("Var1");
 		
@@ -206,17 +209,17 @@ public class Fuzzy {
 		
 		Label lblSup = new Label(group, SWT.BORDER);
 		lblSup.setBounds(10, 42, 40, 20);
-		lblSup.setText("Sup");
+		lblSup.setText("Suporte");
 		
 		Label lblNuc = new Label(group, SWT.BORDER);
-		lblNuc.setText("Nuc");
+		lblNuc.setText("Núcleo");
 		lblNuc.setBounds(10, 84, 40, 20);
 		
-		text = new Text(group, SWT.BORDER);
-		text.setBounds(56, 42, 78, 26);
+		estaVariavel[0] = new Text(group, SWT.BORDER);
+		estaVariavel[0].setBounds(56, 42, 78, 26);
 		
-		text_1 = new Text(group, SWT.BORDER);
-		text_1.setBounds(56, 82, 78, 26);
+		estaVariavel[1] = new Text(group, SWT.BORDER);
+		estaVariavel[1].setBounds(56, 82, 78, 26);
 		
 		Label lblPouco = new Label(group, SWT.BORDER);
 		lblPouco.setText("Pouco");
@@ -226,21 +229,21 @@ public class Fuzzy {
 		lblMdio.setText("M\u00E9dio");
 		lblMdio.setBounds(174, 16, 54, 20);
 		
-		text_2 = new Text(group, SWT.BORDER);
-		text_2.setBounds(161, 42, 78, 26);
+		estaVariavel[2] = new Text(group, SWT.BORDER);
+		estaVariavel[2].setBounds(161, 42, 78, 26);
 		
-		text_3 = new Text(group, SWT.BORDER);
-		text_3.setBounds(161, 78, 78, 26);
+		estaVariavel[3] = new Text(group, SWT.BORDER);
+		estaVariavel[3].setBounds(161, 78, 78, 26);
 		
 		Label lblMuito = new Label(group, SWT.BORDER);
 		lblMuito.setText("Muito");
 		lblMuito.setBounds(279, 16, 54, 20);
 		
-		text_4 = new Text(group, SWT.BORDER);
-		text_4.setBounds(263, 42, 78, 26);
+		estaVariavel[4] = new Text(group, SWT.BORDER);
+		estaVariavel[4].setBounds(263, 42, 78, 26);
 		
-		text_5 = new Text(group, SWT.BORDER);
-		text_5.setBounds(263, 78, 78, 26);
+		estaVariavel[5] = new Text(group, SWT.BORDER);
+		estaVariavel[5].setBounds(263, 78, 78, 26);
 		
 		Label lblNewLabel = new Label(composite_3, SWT.BORDER);
 		lblNewLabel.setBounds(10, 209, 443, 261);
