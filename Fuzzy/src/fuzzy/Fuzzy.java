@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Text;
 public class Fuzzy {
 
 	protected Shell shell;
-	private Text text;
 //	private Text text_1;
 //	private Text text_2;
 //	private Text text_3;
