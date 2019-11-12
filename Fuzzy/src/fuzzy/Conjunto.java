@@ -71,4 +71,12 @@ public class Conjunto {
 			return 0.0;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Conjunto [nome=" + nome + ", suporteMin=" + suporteMin + ", suporteMax=" + suporteMax + ", nucleoMin="
+				+ nucleoMin + ", nucleoMax=" + nucleoMax + "]";
+	}
+	
+	
 }

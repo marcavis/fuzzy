@@ -13,6 +13,8 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -161,22 +163,7 @@ public class Fuzzy {
 		
 		criarAba(tabFolder, variaveis);
 		
-//		Button btnVis1 = new Button(group_1, SWT.NONE);
-//		btnVis1.setBounds(160, 120, 161, 47);
-//		btnVis1.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				try {
-//					BufferedImage imgGrafVarDestino = geraGrafico(varDestino);
-//					ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
-//					Image graficoVarDestino = new Image(null, "temp/_graficovd.bmp");
-//					carregaImagem(label_5, graficoVarDestino);
-//				} catch (Exception f) {
-//					f.printStackTrace();
-//				}
-//			}
-//		});
-//		btnVis1.setText("Visualizar");
+
 		
 		Composite compo = new Composite(shell, SWT.NONE);
 		GridLayout layoutCompo2 = new GridLayout();
@@ -295,59 +282,101 @@ public class Fuzzy {
 			}
 		});
 		
-		Label lblSup = new Label(thisComposite, SWT.BORDER);
+		Label lblSup = new Label(thisComposite, SWT.NONE);
 		lblSup.setText("Suporte");
 		lblSup.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		
 		for (int i = 0; i < estaVariavel.length; i++) {
 			if(i == 6) {
-				Label lblNuc = new Label(thisComposite, SWT.BORDER);
+				Label lblNuc = new Label(thisComposite, SWT.NONE);
 				lblNuc.setText("Núcleo");
 				lblNuc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 			}
 			estaVariavel[i] = new Spinner(thisComposite, SWT.NONE);
+			estaVariavel[i].addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					Spinner s = (Spinner) e.getSource();
+					configuraMaximosSpinner(s, univMin.getSelection(), univMax.getSelection());
+				}
+			});
+			
 			configuraSpinner(estaVariavel[i]);
+			
 		}		
-		CLabel lblNewLabel = new CLabel(thisComposite, SWT.BORDER);
+		CLabel lblGrafico = new CLabel(thisComposite, SWT.BORDER);
 		GridData imagemLayout = new GridData(); 
 		imagemLayout.widthHint = 400;
 		imagemLayout.heightHint = 300;
 		imagemLayout.horizontalSpan = 7;
-		lblNewLabel.setLayoutData(imagemLayout);
+		imagemLayout.horizontalAlignment = SWT.CENTER;
+		lblGrafico.setLayoutData(imagemLayout);
 		
+		for (int i = 0; i < estaVariavel.length; i++) {
+			estaVariavel[i].addFocusListener(new FocusListener() {
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					try {
+						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel, 
+								btnHabilitar.getSelection() ? 3 : 2,
+								new String[] {lblPouco.getText(), lblMdio.getText(), lblMuito.getText()});
+						ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
+						Image graficoVarDestino = new Image(null, "temp/_graficovd.bmp");
+						carregaImagem(lblGrafico, graficoVarDestino);
+					} catch (Exception f) {
+						f.printStackTrace();
+					}
+				}
+				@Override
+				public void focusGained(FocusEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+		}
 	}
 	
 	private void configuraSpinner(Spinner s) {
-//		FontData[] fD = s.getFont().getFontData();
-//		fD[0].setHeight(7);
-//		s.setFont( new Font(display,fD[0]));
 		s.setSelection(0);
 		s.setDigits(2);
 		s.setMinimum(-100000);
 		s.setMaximum(100000);
-		s.setIncrement(500);
+		s.setIncrement(100);
+		s.setPageIncrement(500);
+	}
+	
+	private void configuraMaximosSpinner(Spinner s, int minimo, int maximo) {
+		s.setMinimum(minimo);
+		s.setMaximum(maximo);
 	}
 
-	private BufferedImage geraGrafico(Text[] dados) {
-		BufferedImage res = new BufferedImage(400, 240, BufferedImage.TYPE_INT_RGB);
+	private BufferedImage geraGrafico(Spinner[] dados, int qtConjuntos, String[] nomesConj) {
+		BufferedImage res = new BufferedImage(400, 300, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();
 		
-		double[] valores = new double[dados.length];
-		for (int i = 0; i < dados.length; i++) {
-			String str = dados[i].getText();
-			//System.out.println(text.getText() + "?");
-			try	{
-				valores[i] = Double.parseDouble(str);
-			}
-			catch(NumberFormatException e) {
-				valores[i] = 0.0;
-			}
+//		int[] valores = new int[dados.length];
+//		for (int i = 0; i < dados.length; i++) {
+//			System.out.println(dados[i].getSelection());
+//			String str = dados[i].getText();
+//			//System.out.println(text.getText() + "?");
+//			try	{
+//				valores[i] = Double.parseDouble(str);
+//			}
+//			catch(NumberFormatException e) {
+//				valores[i] = 0.0;
+//			}
+//		}
+		Conjunto[] conjs = new Conjunto[qtConjuntos];
+		for(int i = 0; i < qtConjuntos; i++) {
+			conjs[i] = new Conjunto(nomesConj[i], 	dados[0 + (i*2)].getSelection(),
+													dados[1 + (i*2)].getSelection(),
+													dados[6 + (i*2)].getSelection(),
+													dados[7 + (i*2)].getSelection());
+			System.out.println(conjs[i]);
 		}
 		
-		Conjunto c = new Conjunto("Teste", valores[0], valores[1], valores[2], valores[3]);
-		for(int i = 0; i < 100; i++) {
-			System.out.println("Pertinência para " + (i) + ": " + c.pertinencia(i));
-		}
+//		for(int i = 0; i < qtConjuntos; i++) {
+//			System.out.println("Pertinência para " + (i) + ": " + c.pertinencia(i));
+//		}
 		
 		for(int i = 0; i < 200; i++) {
 			for(int j = 0; j < 200; j++) {
