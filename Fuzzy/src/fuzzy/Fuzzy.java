@@ -281,6 +281,20 @@ public class Fuzzy {
 				}
 			}
 		});
+
+		new Label(thisComposite, SWT.NONE);
+		nada = new Label(thisComposite, SWT.NONE);
+		nada.setText("Mínimo");
+		nada = new Label(thisComposite, SWT.NONE);
+		nada.setText("Máximo");
+		nada = new Label(thisComposite, SWT.NONE);
+		nada.setText("Mínimo");
+		nada = new Label(thisComposite, SWT.NONE);
+		nada.setText("Máximo");
+		nada = new Label(thisComposite, SWT.NONE);
+		nada.setText("Mínimo");
+		nada = new Label(thisComposite, SWT.NONE);
+		nada.setText("Máximo");
 		
 		Label lblSup = new Label(thisComposite, SWT.NONE);
 		lblSup.setText("Suporte");
@@ -306,7 +320,7 @@ public class Fuzzy {
 		CLabel lblGrafico = new CLabel(thisComposite, SWT.BORDER);
 		GridData imagemLayout = new GridData(); 
 		imagemLayout.widthHint = 400;
-		imagemLayout.heightHint = 300;
+		imagemLayout.heightHint = 320;
 		imagemLayout.horizontalSpan = 7;
 		imagemLayout.horizontalAlignment = SWT.CENTER;
 		lblGrafico.setLayoutData(imagemLayout);
@@ -322,6 +336,7 @@ public class Fuzzy {
 						ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
 						Image graficoVarDestino = new Image(null, "temp/_graficovd.bmp");
 						carregaImagem(lblGrafico, graficoVarDestino);
+						
 					} catch (Exception f) {
 						f.printStackTrace();
 					}
@@ -350,7 +365,7 @@ public class Fuzzy {
 	}
 
 	private BufferedImage geraGrafico(Spinner[] dados, int qtConjuntos, String[] nomesConj) {
-		BufferedImage res = new BufferedImage(400, 300, BufferedImage.TYPE_INT_RGB);
+		BufferedImage res = new BufferedImage(420, 320, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();
 		
 //		int[] valores = new int[dados.length];
@@ -367,22 +382,31 @@ public class Fuzzy {
 //		}
 		Conjunto[] conjs = new Conjunto[qtConjuntos];
 		for(int i = 0; i < qtConjuntos; i++) {
+			//o construtor de conjunto força que o núcleo esteja contido no suporte
 			conjs[i] = new Conjunto(nomesConj[i], 	dados[0 + (i*2)].getSelection(),
 													dados[1 + (i*2)].getSelection(),
 													dados[6 + (i*2)].getSelection(),
 													dados[7 + (i*2)].getSelection());
 			System.out.println(conjs[i]);
 		}
+		System.out.println();
 		
-//		for(int i = 0; i < qtConjuntos; i++) {
-//			System.out.println("Pertinência para " + (i) + ": " + c.pertinencia(i));
+//		for(int i = 0; i < 10000; i+= 100) {
+//			
+//			System.out.println("Pertinência para " + (double) (i)/100 + ": " + conjs[0].pertinencia(i));
 //		}
 		
-		for(int i = 0; i < 200; i++) {
-			for(int j = 0; j < 200; j++) {
-				raster.setPixel(10 + i, j, new int[] {i, j, 1});
-			}
-		}
+//		for(int i = 0; i < qtConjuntos; i++) {
+//			System.out.println("Pertinência para " + (i) + ": " + conjs[0].pertinencia(i));
+//		}
+		
+//		for(int i = 0; i < 400; i++) {
+//			//System.out.println(i + ", " + (int) Math.round(300*conjs[0].pertinencia(i)));
+//			int altura = 310 - (int) Math.round(300*conjs[0].pertinencia(i*25));
+//			raster.setPixel(10 + i, altura, new int[] {255, 255, 0});
+//			raster.setPixel(10 + i, altura-1, new int[] {255, 255, 0});
+//			raster.setPixel(10 + i, altura-2, new int[] {255, 255, 0});
+//		}
 		
 		try {
 			res.setData(raster);

@@ -2,16 +2,31 @@ package fuzzy;
 
 public class Conjunto {
 	public String nome;
-	public double suporteMin, suporteMax;
-	public double nucleoMin, nucleoMax;
+	public int suporteMin, suporteMax;
+	public int nucleoMin, nucleoMax;
 	
-	public Conjunto(String nome, double suporteMin, double suporteMax, double nucleoMin, double nucleoMax) {
+	public Conjunto(String nome, int suporteMin, int suporteMax, int nucleoMin, int nucleoMax) {
 		super();
 		this.nome = nome;
-		this.suporteMin = suporteMin;
-		this.suporteMax = suporteMax;
-		this.nucleoMin = nucleoMin;
-		this.nucleoMax = nucleoMax;
+		
+		this.suporteMin = Math.min(suporteMin, suporteMax);
+		this.suporteMax = Math.max(suporteMin, suporteMax);
+		if (nucleoMin < this.suporteMin) {
+			this.nucleoMin = this.suporteMin;
+		} else {
+			this.nucleoMin = nucleoMin;
+		}
+		if (nucleoMax > this.suporteMax) {
+			this.nucleoMax = this.suporteMax;
+		} else {
+			this.nucleoMax = nucleoMax;
+		}
+		
+		if(this.nucleoMin > this.nucleoMax) {
+			int aux = this.nucleoMin;
+			this.nucleoMin = this.nucleoMax;
+			this.nucleoMax = aux;
+		}
 	}
 
 	public String getNome() {
@@ -26,31 +41,31 @@ public class Conjunto {
 		return suporteMin;
 	}
 
-	public void setSuporteMin(double suporteMin) {
+	public void setSuporteMin(int suporteMin) {
 		this.suporteMin = suporteMin;
 	}
 
-	public double getSuporteMax() {
+	public int getSuporteMax() {
 		return suporteMax;
 	}
 
-	public void setSuporteMax(double suporteMax) {
+	public void setSuporteMax(int suporteMax) {
 		this.suporteMax = suporteMax;
 	}
 
-	public double getNucleoMin() {
+	public int getNucleoMin() {
 		return nucleoMin;
 	}
 
-	public void setNucleoMin(double nucleoMin) {
+	public void setNucleoMin(int nucleoMin) {
 		this.nucleoMin = nucleoMin;
 	}
 
-	public double getNucleoMax() {
+	public int getNucleoMax() {
 		return nucleoMax;
 	}
 
-	public void setNucleoMax(double nucleoMax) {
+	public void setNucleoMax(int nucleoMax) {
 		this.nucleoMax = nucleoMax;
 	}
 

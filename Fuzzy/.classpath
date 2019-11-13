@@ -18,5 +18,7 @@
 	<classpathentry kind="lib" path="/home/marcos/.p2/pool/plugins/org.eclipse.ui.workbench_3.116.0.v20190826-1428.jar" sourcepath="/home/marcos/.p2/pool/plugins/org.eclipse.ui.workbench_3.116.0.v20190826-1428.jar"/>
 	<classpathentry kind="lib" path="/home/marcos/.p2/pool/plugins/com.ibm.icu_64.2.0.v20190507-1337.jar" sourcepath="/home/marcos/.p2/pool/plugins/com.ibm.icu_64.2.0.v20190507-1337.jar"/>
 	<classpathentry kind="lib" path="/home/marcos/.p2/pool/plugins/org.eclipse.ui.forms_3.8.100.v20190625-1825.jar" sourcepath="/home/marcos/.p2/pool/plugins/org.eclipse.ui.forms_3.8.100.v20190625-1825.jar"/>
+	<classpathentry kind="lib" path="/home/marcos/Downloads/jfreechart-1.0.19/lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="/home/marcos/Downloads/jfreechart-1.0.19/lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
