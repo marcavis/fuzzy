@@ -184,52 +184,89 @@ public class Fuzzy {
 		layoutBtnDup.horizontalAlignment = GridData.FILL;
 		layoutBtnDup.horizontalSpan = 2;
 		
-		Table tabela = new Table(compo, SWT.NONE);
-		tabela.setHeaderVisible(true);
-		tabela.setLinesVisible(true);
-		String[] nomesColunas = new String[] {"Variável 1", "Operador", "Variável 2", "Resposta"};
-		for (int i = 0; i < nomesColunas.length; i++) {
-			TableColumn column = new TableColumn(tabela, SWT.NULL);
-			column.setText(nomesColunas[i]);
+//		Table tabela = new Table(compo, SWT.NONE);
+//		tabela.setHeaderVisible(true);
+//		tabela.setLinesVisible(true);
+//		String[] nomesColunas = new String[] {"Variável 1", "Operador", "Variável 2", "Resposta"};
+//		for (int i = 0; i < nomesColunas.length; i++) {
+//			TableColumn column = new TableColumn(tabela, SWT.NULL);
+//			column.setText(nomesColunas[i]);
+//		}
+		
+		GridLayout layoutGrupo = new GridLayout();
+	    layoutGrupo.numColumns = 4;
+		compo.setLayout(layoutCompo2);
+		
+		Group grpRegras = new Group(compo, SWT.BORDER);
+		grpRegras.setText("Regras");
+		grpRegras.setLayoutData(layoutBtnDup);
+		grpRegras.setLayout(layoutGrupo);
+		
+		Label[] l = new Label[4];
+		l[0]= new Label(grpRegras, SWT.NONE);
+		l[0].setText("Variável 1");
+		l[1] = new Label(grpRegras, SWT.NONE);
+		l[1].setText("Operador");
+		l[2] = new Label(grpRegras, SWT.NONE);
+		l[2].setText("Variável 2");
+		l[3] = new Label(grpRegras, SWT.NONE);
+		l[3].setText("Destino");
+		int qtRegras = 12;
+		Combo[] regras = new Combo[qtRegras * 4];
+		for(int i = 0; i < qtRegras * 4; i++) {
+			regras[i] = new Combo(grpRegras, SWT.READ_ONLY);
+			if (i % 2 == 0) {
+				//variáveis de entrada
+				regras[i].setItems(new String[] {"Nada"});
+				regras[i].select(0);
+			} else if (i % 4 == 1) {
+				regras[i].setItems(new String[] {"E", "Ou"});
+				regras[i].select(0);
+			} else {
+				//variável destino
+				regras[i].setItems(new String[] {"Nada"});
+				regras[i].select(0);
+			}
+			regras[i].pack();
 		}
 		
-		for (int i = 0; i < 12; i++) {
-			TableItem item = new TableItem(tabela, SWT.NULL);
-			TableEditor editor = new TableEditor(tabela);
-			Combo comboVar1 = new Combo(tabela, SWT.READ_ONLY);
-			comboVar1.setItems(new String[] {"AsdfasdA", "IIasdfa"});
-			comboVar1.pack();
-			editor.minimumWidth = comboVar1.getSize().x;
-			editor.setEditor(comboVar1, item, 0);
-			
-			TableEditor editor2 = new TableEditor(tabela);
-			Combo comboOp = new Combo(tabela, SWT.READ_ONLY);
-			comboOp.setItems(new String[] {"E", "Ou"});
-			comboOp.pack();
-			editor2.minimumWidth = comboOp.getSize().x;
-			editor2.setEditor(comboOp, item, 1);
-			
-			TableEditor editor3 = new TableEditor(tabela);
-			Combo comboVar2 = new Combo(tabela, SWT.READ_ONLY);
-			comboVar2.setItems(new String[] {"AA", "II"});
-			comboVar2.pack();
-			editor3.minimumWidth = comboVar2.getSize().x;
-			editor3.setEditor(comboVar2, item, 2);
-			
-			TableEditor editor4 = new TableEditor(tabela);
-			Combo comboVarDest = new Combo(tabela, SWT.READ_ONLY);
-			comboVarDest.setItems(new String[] {"AA", "II"});
-			comboVarDest.pack();
-			editor4.minimumWidth = comboVarDest.getSize().x;
-			editor4.setEditor(comboVarDest, item, 3);
-
-		}
-		
-		for (int loopIndex = 0; loopIndex < nomesColunas.length; loopIndex++) {
-			tabela.getColumn(loopIndex).pack();
-		}
-		
-		tabela.setLayoutData(layoutBtnDup);
+//		for (int i = 0; i < 12; i++) {
+//			TableItem item = new TableItem(tabela, SWT.NULL);
+//			TableEditor editor = new TableEditor(tabela);
+//			Combo comboVar1 = new Combo(tabela, SWT.READ_ONLY);
+//			comboVar1.setItems(new String[] {"AsdfasdA", "IIasdfa"});
+//			comboVar1.pack();
+//			editor.minimumWidth = comboVar1.getSize().x;
+//			editor.setEditor(comboVar1, item, 0);
+//			
+//			TableEditor editor2 = new TableEditor(tabela);
+//			Combo comboOp = new Combo(tabela, SWT.READ_ONLY);
+//			comboOp.setItems(new String[] {"E", "Ou"});
+//			comboOp.pack();
+//			editor2.minimumWidth = comboOp.getSize().x;
+//			editor2.setEditor(comboOp, item, 1);
+//			
+//			TableEditor editor3 = new TableEditor(tabela);
+//			Combo comboVar2 = new Combo(tabela, SWT.READ_ONLY);
+//			comboVar2.setItems(new String[] {"AA", "II"});
+//			comboVar2.pack();
+//			editor3.minimumWidth = comboVar2.getSize().x;
+//			editor3.setEditor(comboVar2, item, 2);
+//			
+//			TableEditor editor4 = new TableEditor(tabela);
+//			Combo comboVarDest = new Combo(tabela, SWT.READ_ONLY);
+//			comboVarDest.setItems(new String[] {"AA", "II"});
+//			comboVarDest.pack();
+//			editor4.minimumWidth = comboVarDest.getSize().x;
+//			editor4.setEditor(comboVarDest, item, 3);
+//
+//		}
+//		
+//		for (int loopIndex = 0; loopIndex < nomesColunas.length; loopIndex++) {
+//			tabela.getColumn(loopIndex).pack();
+//		}
+//		
+//		tabela.setLayoutData(layoutBtnDup);
 		
 		Button btnExecutar = new Button(compo, SWT.NONE);
 		//btnExecutar.setBounds(633, 548, 161, 47);
