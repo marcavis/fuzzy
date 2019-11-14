@@ -13,6 +13,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -35,6 +36,9 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 public class Fuzzy {
@@ -173,13 +177,96 @@ public class Fuzzy {
 		Label temp = new Label(compo, SWT.NONE);
 		temp.setText("Variável Destino");
 		
-		
 		varDestino = new Combo(compo, SWT.READ_ONLY);
 		atualizarComboVarDestino();
 		
-		Button btnExecutar = new Button(shell, SWT.NONE);
+		GridData layoutBtnDup = new GridData();
+		layoutBtnDup.horizontalAlignment = GridData.FILL;
+		layoutBtnDup.horizontalSpan = 2;
+		
+		Table tabela = new Table(compo, SWT.NONE);
+		tabela.setHeaderVisible(true);
+		tabela.setLinesVisible(true);
+		String[] nomesColunas = new String[] {"Variável 1", "Operador", "Variável 2", "Resposta"};
+		for (int i = 0; i < nomesColunas.length; i++) {
+			TableColumn column = new TableColumn(tabela, SWT.NULL);
+			column.setText(nomesColunas[i]);
+		}
+		
+		for (int i = 0; i < 12; i++) {
+			TableItem item = new TableItem(tabela, SWT.NULL);
+			TableEditor editor = new TableEditor(tabela);
+			Combo comboVar1 = new Combo(tabela, SWT.READ_ONLY);
+			comboVar1.setItems(new String[] {"AsdfasdA", "IIasdfa"});
+			comboVar1.pack();
+			editor.minimumWidth = comboVar1.getSize().x;
+			editor.setEditor(comboVar1, item, 0);
+			
+			TableEditor editor2 = new TableEditor(tabela);
+			Combo comboOp = new Combo(tabela, SWT.READ_ONLY);
+			comboOp.setItems(new String[] {"E", "Ou"});
+			comboOp.pack();
+			editor2.minimumWidth = comboOp.getSize().x;
+			editor2.setEditor(comboOp, item, 1);
+			
+			TableEditor editor3 = new TableEditor(tabela);
+			Combo comboVar2 = new Combo(tabela, SWT.READ_ONLY);
+			comboVar2.setItems(new String[] {"AA", "II"});
+			comboVar2.pack();
+			editor3.minimumWidth = comboVar2.getSize().x;
+			editor3.setEditor(comboVar2, item, 2);
+			
+			TableEditor editor4 = new TableEditor(tabela);
+			Combo comboVarDest = new Combo(tabela, SWT.READ_ONLY);
+			comboVarDest.setItems(new String[] {"AA", "II"});
+			comboVarDest.pack();
+			editor4.minimumWidth = comboVarDest.getSize().x;
+			editor4.setEditor(comboVarDest, item, 3);
+
+		}
+		
+		for (int loopIndex = 0; loopIndex < nomesColunas.length; loopIndex++) {
+			tabela.getColumn(loopIndex).pack();
+		}
+		
+		tabela.setLayoutData(layoutBtnDup);
+		
+		Button btnExecutar = new Button(compo, SWT.NONE);
 		//btnExecutar.setBounds(633, 548, 161, 47);
 		btnExecutar.setText("Executar");
+		
+		
+		
+//		Table table = new Table(shell, SWT.NONE);
+//		  table.setHeaderVisible(true);
+//		  table.setLinesVisible(true);
+//		  table.setBounds(new org.eclipse.swt.graphics.Rectangle(47,67,190,70));
+//
+//		  TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+//		  tableColumn.setWidth(200);
+//		  tableColumn.setText("Check Column");
+//
+//		  TableColumn tableColumn1 = new TableColumn(table, SWT.NONE);
+//		  tableColumn1.setWidth(200);
+//		  tableColumn1.setText("Combo Column");
+//
+//		  TableItem tableItem=new TableItem(table,SWT.NONE);
+//		  TableEditor editor = new TableEditor (table);
+//
+//		  Button checkButton = new Button(table, SWT.CHECK);
+//		  checkButton.pack();
+//
+//		  editor.minimumWidth = checkButton.getSize ().x;
+//		  editor.horizontalAlignment = SWT.CENTER;
+//		  editor.setEditor(checkButton, tableItem, 0);
+//		  editor = new TableEditor (table);
+//
+//		  Combo combo = new Combo(table, SWT.CHECK);
+//		  combo.pack();
+//
+//		  editor.minimumWidth = combo.getSize ().x;
+//		  editor.horizontalAlignment = SWT.CENTER;
+//		  editor.setEditor(combo, tableItem, 1);
 
 	}
 	
