@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -13,15 +14,12 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -36,26 +34,20 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 public class Fuzzy {
 
 	protected Display display;
 	protected Shell shell;
-//	private Text text_1;
-//	private Text text_2;
-//	private Text text_3;
-//	private Text text_4;
-//	private Text text_5;
 	
 	private ArrayList<Variavel> variaveis = new ArrayList<Variavel>();
 
 	private CTabFolder tabFolder;
 
 	private Combo varDestino;
+	private Combo[] regras;
+	private int qtRegras = 12;
 
 	/**
 	 * Launch the application.
@@ -167,8 +159,6 @@ public class Fuzzy {
 		
 		criarAba(tabFolder, variaveis);
 		
-
-		
 		Composite compo = new Composite(shell, SWT.NONE);
 		GridLayout layoutCompo2 = new GridLayout();
 	    layoutCompo2.numColumns = 2;
@@ -179,6 +169,12 @@ public class Fuzzy {
 		
 		varDestino = new Combo(compo, SWT.READ_ONLY);
 		atualizarComboVarDestino();
+		varDestino.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent arg0) {
+				atualizarCombosRegras();
+			}
+		});
 		
 		GridData layoutBtnDup = new GridData();
 		layoutBtnDup.horizontalAlignment = GridData.FILL;
@@ -202,6 +198,10 @@ public class Fuzzy {
 		grpRegras.setLayoutData(layoutBtnDup);
 		grpRegras.setLayout(layoutGrupo);
 		
+		for (Variavel variavel : variaveis) {
+			variavel.atualizar(3);
+		}
+		
 		Label[] l = new Label[4];
 		l[0]= new Label(grpRegras, SWT.NONE);
 		l[0].setText("Variável 1");
@@ -212,23 +212,15 @@ public class Fuzzy {
 		l[3] = new Label(grpRegras, SWT.NONE);
 		l[3].setText("Destino");
 		int qtRegras = 12;
-		Combo[] regras = new Combo[qtRegras * 4];
+		regras = new Combo[qtRegras * 4];
 		for(int i = 0; i < qtRegras * 4; i++) {
 			regras[i] = new Combo(grpRegras, SWT.READ_ONLY);
-			if (i % 2 == 0) {
-				//variáveis de entrada
-				regras[i].setItems(new String[] {"Nada"});
-				regras[i].select(0);
-			} else if (i % 4 == 1) {
-				regras[i].setItems(new String[] {"E", "Ou"});
-				regras[i].select(0);
-			} else {
-				//variável destino
-				regras[i].setItems(new String[] {"Nada"});
-				regras[i].select(0);
-			}
+			
 			regras[i].pack();
+			//System.out.println(regras[i]);
 		}
+		
+		atualizarCombosRegras();
 		
 		Button btnExecutar = new Button(compo, SWT.NONE);
 		//btnExecutar.setBounds(633, 548, 161, 47);
@@ -336,7 +328,6 @@ public class Fuzzy {
 		btnHabilitar.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println();
 				int[] conjunto3 = new int[] {4, 5, 10, 11};
 				for (int i : conjunto3) {
 					estaVariavel[i].setVisible(btnHabilitar.getSelection());
@@ -428,6 +419,10 @@ public class Fuzzy {
 		}
 		Text[] nomesConj = new Text[] {lblPouco, lblMdio, lblMuito};
 		variaveis.add(new Variavel(tbtmNewItem, textNomeVar, estaVariavel, nomesConj, univMin, univMax));
+		
+		if(regras != null) {
+			atualizarCombosRegras();
+		}
 	}
 	
 	private Variavel variavelPai(CTabItem item) {
@@ -452,9 +447,7 @@ public class Fuzzy {
 			}
 		}
 		if (indice > -1) {
-			System.out.println(variaveis.size());
 			variaveis.remove(indice);
-			System.out.println(variaveis.size());
 		}
 	}
 	
@@ -472,6 +465,58 @@ public class Fuzzy {
 		s.setMaximum(maximo);
 	}
 
+	private String[] popularComboVarNormal() {
+		//afirmações como "Var 1 é pouco"
+		ArrayList<String> afirmacoes = new ArrayList<String>();
+		afirmacoes.add("Nada");
+		for (Variavel v : variaveis) {
+			if (v.getAba().getText() != varDestino.getText()) {
+				afirmacoes.addAll(new ArrayList<String>(Arrays.asList(v.afirmacoes())));
+			}
+		}
+		String[] result = new String[afirmacoes.size()];
+		for (int i = 0; i < afirmacoes.size(); i++) {
+			result[i] = afirmacoes.get(i);
+		}
+		return result;
+	}
+	
+	private String[] popularComboVarDestino() {
+		//afirmações como "Var 1 é pouco"
+		ArrayList<String> afirmacoes = new ArrayList<String>();
+		afirmacoes.add("Nada");
+		for (Variavel v : variaveis) {
+			if (v.getAba().getText() == varDestino.getText()) {
+				afirmacoes.addAll(new ArrayList<String>(Arrays.asList(v.afirmacoes())));
+			}
+		}
+		String[] result = new String[afirmacoes.size()];
+		for (int i = 0; i < afirmacoes.size(); i++) {
+			result[i] = afirmacoes.get(i);
+		}
+		return result;
+	}
+	
+	private void atualizarCombosRegras() {
+		for(int i = 0; i < qtRegras * 4; i++) {
+			if (i % 2 == 0) {
+				//variáveis de entrada
+				//regras[i].setItems(new String[] {"Nada"});
+				regras[i].setItems(popularComboVarNormal());
+				regras[i].select(0);
+			} else if (i % 4 == 1) {
+				regras[i].setItems(new String[] {"E", "Ou"});
+				regras[i].select(0);
+			} else {
+				//variável destino
+				//regras[i].setItems(new String[] {"Nada"});
+				regras[i].setItems(popularComboVarDestino());
+				regras[i].select(0);
+			}
+			regras[i].pack();
+		}
+	}
+	
 	private BufferedImage geraGrafico(Spinner[] dados, int qtConjuntos, String[] nomesConj) {
 		BufferedImage res = new BufferedImage(420, 320, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();

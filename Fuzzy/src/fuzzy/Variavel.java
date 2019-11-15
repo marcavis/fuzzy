@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Text;
 public class Variavel {
 	private CTabItem aba;
 	private Text nome;
-	private Conjunto[] conjuntos;
+	private Conjunto[] conjuntos = new Conjunto[3];
 	private Spinner[] valores;
 	private Text[] nomesConjuntos;
 	private Spinner univMinimo;
@@ -111,6 +111,14 @@ public class Variavel {
 		//System.out.println();
 	}
 	
+	public String[] afirmacoes() {
+		String[] result = new String[3];
+		atualizar(3);
+		for(int i = 0; i < conjuntos.length; i++) {
+			result[i] = nome.getText() + " é " + conjuntos[i].getNome();
+		}
+		return result;
+	}
 
 //	public double[] pertinencias(double entrada) {
 //		double[] resultado = new double[conjuntos.length];
