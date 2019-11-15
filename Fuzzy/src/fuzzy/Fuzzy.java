@@ -51,7 +51,7 @@ public class Fuzzy {
 //	private Text text_4;
 //	private Text text_5;
 	
-	private ArrayList<Text[]> variaveis;
+	private ArrayList<Variavel> variaveis = new ArrayList<Variavel>();
 
 	private CTabFolder tabFolder;
 
@@ -141,16 +141,16 @@ public class Fuzzy {
 		
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void close(CTabFolderEvent event) {
-				System.out.println("want to close");
 				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK| SWT.CANCEL);
 				dialog.setText("Confirmação");
 				System.out.println(event.item);
-				CTabItem text = (CTabItem) event.item;
-				dialog.setMessage("Deseja realmente excluir a variável " + text.getText() + "?");
+				CTabItem aba = (CTabItem) event.item;
+				dialog.setMessage("Deseja realmente excluir a variável " + aba.getText() + "?");
 				int retorno = dialog.open();
 				event.doit = retorno == 32; //confirmou exclusão
 				if(event.doit) {
 					atualizarComboVarDestino();
+					removerVariavel(aba);
 				}
 			}
 		});
@@ -158,7 +158,7 @@ public class Fuzzy {
 		btnNovaVar.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(tabFolder.getItemCount() < 8) {
+				if(tabFolder.getItemCount() < 5) {
 					criarAba(tabFolder, variaveis);
 					atualizarComboVarDestino();
 				}
@@ -230,80 +230,16 @@ public class Fuzzy {
 			regras[i].pack();
 		}
 		
-//		for (int i = 0; i < 12; i++) {
-//			TableItem item = new TableItem(tabela, SWT.NULL);
-//			TableEditor editor = new TableEditor(tabela);
-//			Combo comboVar1 = new Combo(tabela, SWT.READ_ONLY);
-//			comboVar1.setItems(new String[] {"AsdfasdA", "IIasdfa"});
-//			comboVar1.pack();
-//			editor.minimumWidth = comboVar1.getSize().x;
-//			editor.setEditor(comboVar1, item, 0);
-//			
-//			TableEditor editor2 = new TableEditor(tabela);
-//			Combo comboOp = new Combo(tabela, SWT.READ_ONLY);
-//			comboOp.setItems(new String[] {"E", "Ou"});
-//			comboOp.pack();
-//			editor2.minimumWidth = comboOp.getSize().x;
-//			editor2.setEditor(comboOp, item, 1);
-//			
-//			TableEditor editor3 = new TableEditor(tabela);
-//			Combo comboVar2 = new Combo(tabela, SWT.READ_ONLY);
-//			comboVar2.setItems(new String[] {"AA", "II"});
-//			comboVar2.pack();
-//			editor3.minimumWidth = comboVar2.getSize().x;
-//			editor3.setEditor(comboVar2, item, 2);
-//			
-//			TableEditor editor4 = new TableEditor(tabela);
-//			Combo comboVarDest = new Combo(tabela, SWT.READ_ONLY);
-//			comboVarDest.setItems(new String[] {"AA", "II"});
-//			comboVarDest.pack();
-//			editor4.minimumWidth = comboVarDest.getSize().x;
-//			editor4.setEditor(comboVarDest, item, 3);
-//
-//		}
-//		
-//		for (int loopIndex = 0; loopIndex < nomesColunas.length; loopIndex++) {
-//			tabela.getColumn(loopIndex).pack();
-//		}
-//		
-//		tabela.setLayoutData(layoutBtnDup);
-		
 		Button btnExecutar = new Button(compo, SWT.NONE);
 		//btnExecutar.setBounds(633, 548, 161, 47);
 		btnExecutar.setText("Executar");
-		
-		
-		
-//		Table table = new Table(shell, SWT.NONE);
-//		  table.setHeaderVisible(true);
-//		  table.setLinesVisible(true);
-//		  table.setBounds(new org.eclipse.swt.graphics.Rectangle(47,67,190,70));
-//
-//		  TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-//		  tableColumn.setWidth(200);
-//		  tableColumn.setText("Check Column");
-//
-//		  TableColumn tableColumn1 = new TableColumn(table, SWT.NONE);
-//		  tableColumn1.setWidth(200);
-//		  tableColumn1.setText("Combo Column");
-//
-//		  TableItem tableItem=new TableItem(table,SWT.NONE);
-//		  TableEditor editor = new TableEditor (table);
-//
-//		  Button checkButton = new Button(table, SWT.CHECK);
-//		  checkButton.pack();
-//
-//		  editor.minimumWidth = checkButton.getSize ().x;
-//		  editor.horizontalAlignment = SWT.CENTER;
-//		  editor.setEditor(checkButton, tableItem, 0);
-//		  editor = new TableEditor (table);
-//
-//		  Combo combo = new Combo(table, SWT.CHECK);
-//		  combo.pack();
-//
-//		  editor.minimumWidth = combo.getSize ().x;
-//		  editor.horizontalAlignment = SWT.CENTER;
-//		  editor.setEditor(combo, tableItem, 1);
+		btnExecutar.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println(variaveis.get(0));
+				
+			}
+		});
 
 	}
 	
@@ -315,7 +251,7 @@ public class Fuzzy {
 		varDestino.setItems(nomesVars);
 	}
 
-	public void criarAba(CTabFolder tabFolder, ArrayList<Text[]> variaveis) {
+	public void criarAba(CTabFolder tabFolder, ArrayList<Variavel> variaveis) {
 		Spinner[] estaVariavel = new Spinner[12];
 
 		GridLayout layout = new GridLayout();
@@ -370,6 +306,8 @@ public class Fuzzy {
 		configuraSpinner(univMax);
 		univMax.setSelection(10000);
 		
+		
+		
 		new Label(thisComposite, SWT.NONE);
 		new Label(thisComposite, SWT.NONE);
 		
@@ -405,6 +343,21 @@ public class Fuzzy {
 				}
 			}
 		});
+		
+		for (Spinner spinner : new Spinner[] {univMin, univMax}) {
+			spinner.addFocusListener(new FocusListener() {
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					int qtConjuntos = btnHabilitar.getSelection() ? 3 : 2;
+					variavelPai(tbtmNewItem).atualizar(qtConjuntos);
+				}
+				@Override
+				public void focusGained(FocusEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+		}
 
 		new Label(thisComposite, SWT.NONE);
 		nada = new Label(thisComposite, SWT.NONE);
@@ -454,8 +407,9 @@ public class Fuzzy {
 				@Override
 				public void focusLost(FocusEvent arg0) {
 					try {
-						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel, 
-								btnHabilitar.getSelection() ? 3 : 2,
+						int qtConjuntos = btnHabilitar.getSelection() ? 3 : 2;
+						variavelPai(tbtmNewItem).atualizar(qtConjuntos);
+						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel, qtConjuntos,
 								new String[] {lblPouco.getText(), lblMdio.getText(), lblMuito.getText()});
 						ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
 						Image graficoVarDestino = new Image(null, "temp/_graficovd.bmp");
@@ -471,6 +425,36 @@ public class Fuzzy {
 					
 				}
 			});
+		}
+		Text[] nomesConj = new Text[] {lblPouco, lblMdio, lblMuito};
+		variaveis.add(new Variavel(tbtmNewItem, textNomeVar, estaVariavel, nomesConj, univMin, univMax));
+	}
+	
+	private Variavel variavelPai(CTabItem item) {
+		int indice = -1;
+		for(int i = 0; i < variaveis.size(); i++) {
+			if(variaveis.get(i).getAba() == item) {
+				indice = i;
+			}
+		}
+		if (indice > -1) {
+			return variaveis.get(indice);
+		} else {
+			return null;
+		}
+	}
+	
+	private void removerVariavel(CTabItem item) {
+		int indice = -1;
+		for(int i = 0; i < variaveis.size(); i++) {
+			if(variaveis.get(i).getAba() == item) {
+				indice = i;
+			}
+		}
+		if (indice > -1) {
+			System.out.println(variaveis.size());
+			variaveis.remove(indice);
+			System.out.println(variaveis.size());
 		}
 	}
 	
@@ -504,16 +488,16 @@ public class Fuzzy {
 //				valores[i] = 0.0;
 //			}
 //		}
-		Conjunto[] conjs = new Conjunto[qtConjuntos];
-		for(int i = 0; i < qtConjuntos; i++) {
-			//o construtor de conjunto força que o núcleo esteja contido no suporte
-			conjs[i] = new Conjunto(nomesConj[i], 	dados[0 + (i*2)].getSelection(),
-													dados[1 + (i*2)].getSelection(),
-													dados[6 + (i*2)].getSelection(),
-													dados[7 + (i*2)].getSelection());
-			System.out.println(conjs[i]);
-		}
-		System.out.println();
+//		Conjunto[] conjs = new Conjunto[qtConjuntos];
+//		for(int i = 0; i < qtConjuntos; i++) {
+//			//o construtor de conjunto força que o núcleo esteja contido no suporte
+//			conjs[i] = new Conjunto(nomesConj[i], 	dados[0 + (i*2)].getSelection(),
+//													dados[1 + (i*2)].getSelection(),
+//													dados[6 + (i*2)].getSelection(),
+//													dados[7 + (i*2)].getSelection());
+//			System.out.println(conjs[i]);
+//		}
+//		System.out.println();
 		
 //		for(int i = 0; i < 10000; i+= 100) {
 //			
