@@ -90,7 +90,8 @@ public class Variavel {
 		return result;
 	}
 	
-	public void atualizar(int qtConjuntos) {
+	public void atualizar() {
+		int qtConjuntos = 3;
 		conjuntos = new Conjunto[qtConjuntos];
 		for(int i = 0; i < qtConjuntos; i++) {
 			//o construtor de conjunto força que o núcleo esteja contido no suporte
@@ -113,7 +114,7 @@ public class Variavel {
 	
 	public String[] afirmacoes() {
 		String[] result = new String[3];
-		atualizar(3);
+		atualizar();
 		for(int i = 0; i < conjuntos.length; i++) {
 			result[i] = nome.getText() + " é " + conjuntos[i].getNome();
 		}

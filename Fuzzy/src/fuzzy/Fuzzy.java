@@ -227,7 +227,7 @@ public class Fuzzy {
 		grpRegras.setLayout(layoutGrupo);
 		
 		for (Variavel variavel : variaveis) {
-			variavel.atualizar(3);
+			variavel.atualizar();
 		}
 		
 		Label[] l = new Label[4];
@@ -343,32 +343,11 @@ public class Fuzzy {
 		lblMuito.setText("Muito");
 		lblMuito.setLayoutData(layoutBtnDup);
 		
-		GridData layout5Esp = new GridData();
-		layout5Esp.horizontalAlignment = GridData.FILL;
-		layout5Esp.horizontalSpan = 5;
-		nada = new Label(thisComposite, SWT.NONE);
-		nada.setLayoutData(layout5Esp);
-		
-		Button btnHabilitar = new Button(thisComposite, SWT.CHECK);
-		btnHabilitar.setLayoutData(layoutBtnDup);
-		btnHabilitar.setSelection(true);
-		btnHabilitar.setText("Habilitar");
-		btnHabilitar.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int[] conjunto3 = new int[] {4, 5, 10, 11};
-				for (int i : conjunto3) {
-					estaVariavel[i].setVisible(btnHabilitar.getSelection());
-				}
-			}
-		});
-		
 		for (Spinner spinner : new Spinner[] {univMin, univMax}) {
 			spinner.addFocusListener(new FocusListener() {
 				@Override
 				public void focusLost(FocusEvent arg0) {
-					int qtConjuntos = btnHabilitar.getSelection() ? 3 : 2;
-					variavelPai(tbtmNewItem).atualizar(qtConjuntos);
+					variavelPai(tbtmNewItem).atualizar();
 				}
 				@Override
 				public void focusGained(FocusEvent arg0) {
@@ -426,9 +405,8 @@ public class Fuzzy {
 				@Override
 				public void focusLost(FocusEvent arg0) {
 					try {
-						int qtConjuntos = btnHabilitar.getSelection() ? 3 : 2;
-						variavelPai(tbtmNewItem).atualizar(qtConjuntos);
-						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel, qtConjuntos,
+						variavelPai(tbtmNewItem).atualizar();
+						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel,
 								new String[] {lblPouco.getText(), lblMdio.getText(), lblMuito.getText()});
 						ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
 						Image graficoVarDestino = new Image(null, "temp/_graficovd.bmp");
@@ -545,7 +523,7 @@ public class Fuzzy {
 		}
 	}
 	
-	private BufferedImage geraGrafico(Spinner[] dados, int qtConjuntos, String[] nomesConj) {
+	private BufferedImage geraGrafico(Spinner[] dados, String[] nomesConj) {
 		BufferedImage res = new BufferedImage(420, 320, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();
 		
