@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -112,11 +113,38 @@ public class Fuzzy {
 		Menu menu_1 = new Menu(mntmarquivo);
 		mntmarquivo.setMenu(menu_1);
 		
+		MenuItem mntmAbrir = new MenuItem(menu_1, SWT.NONE);
+		mntmAbrir.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//shell.close();
+			}
+		});
+		mntmAbrir.setText("&Abrir");
+		
+		MenuItem mntmSalvar = new MenuItem(menu_1, SWT.NONE);
+		mntmSalvar.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+				dialog.setFilterNames(new String[] { "Sistemas difusos (*.fzy)", "Todos os arquivos (*.*)" });
+				dialog.setFilterExtensions(new String[] { "*.fzy", "*.*" }); // Windows
+			                                    // wild
+			                                    // cards
+			    //dialog.setFilterPath("c:\\"); // Windows path
+				
+			    dialog.setFileName("unknown.fzy");
+			    String caminhoSalvar = dialog.open();
+			    salvarEstado(caminhoSalvar);
+			}
+		});
+		mntmSalvar.setText("&Salvar");
+		
 		MenuItem mntmFechar = new MenuItem(menu_1, SWT.NONE);
 		mntmFechar.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
+				shell.close();
 			}
 		});
 		mntmFechar.setText("&Fechar");
@@ -577,5 +605,15 @@ public class Fuzzy {
 				img.getImageData().width,
 				img.getImageData().height
 				);
+	}
+	
+	private boolean salvarEstado(String caminho) {
+		String saida = "";
+		for (Variavel v : variaveis) {
+			saida += "nomeVar:" + v.getNome() + "\n";
+			saida += "univ:" + v.getUnivMinimo() + ":" + v.getUnivMaximo() + "\n";
+//			saida += "temGrupo3:" + v.getAba()
+		}
+		return true;
 	}
 }
