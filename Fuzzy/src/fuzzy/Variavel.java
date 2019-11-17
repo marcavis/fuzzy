@@ -56,6 +56,14 @@ public class Variavel {
 		this.nomesConjuntos = nomesConjuntos;
 	}
 
+	public Conjunto[] getConjuntos() {
+		return conjuntos;
+	}
+
+	public void setConjuntos(Conjunto[] conjuntos) {
+		this.conjuntos = conjuntos;
+	}
+
 	public Spinner getUnivMinimo() {
 		return univMinimo;
 	}

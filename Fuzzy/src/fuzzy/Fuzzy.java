@@ -2,14 +2,12 @@ package fuzzy;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +55,8 @@ public class Fuzzy {
 	private Combo varDestino;
 	private Combo[] regras;
 	private int qtRegras = 12;
+	private Label labelValor;
+	private int destinoMin, destinoMax;
 
 	/**
 	 * Launch the application.
@@ -92,25 +92,10 @@ public class Fuzzy {
 	protected void createContents() {
 		shell = new Shell();
 		//shell.setSize(978, 677);
-		shell.setText("SWT Application");
+		shell.setText("Sistema Fuzzy");
 		GridLayout mainGrid = new GridLayout();
 		mainGrid.numColumns = 3;
 		shell.setLayout(mainGrid);
-		
-//		Menu menu = new Menu(shell, SWT.BAR);
-//		shell.setMenuBar(menu);
-//		
-//		MenuItem mntmNewItem_1 = new MenuItem(menu, SWT.NONE);
-//		mntmNewItem_1.setText("New Item");
-//		
-//		MenuItem mntmNewItem = new MenuItem(menu, SWT.NONE);
-//		mntmNewItem.setText("New Item");
-//		
-//		MenuItem menuItem = new MenuItem(menu, SWT.CASCADE);
-//		menuItem.setText("New SubMenu");
-//		
-//		Menu menu_1 = new Menu(menuItem);
-//		menuItem.setMenu(menu_1);
 		
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
@@ -214,15 +199,6 @@ public class Fuzzy {
 		layoutBtnDup.horizontalAlignment = GridData.FILL;
 		layoutBtnDup.horizontalSpan = 2;
 		
-//		Table tabela = new Table(compo, SWT.NONE);
-//		tabela.setHeaderVisible(true);
-//		tabela.setLinesVisible(true);
-//		String[] nomesColunas = new String[] {"Variável 1", "Operador", "Variável 2", "Resposta"};
-//		for (int i = 0; i < nomesColunas.length; i++) {
-//			TableColumn column = new TableColumn(tabela, SWT.NULL);
-//			column.setText(nomesColunas[i]);
-//		}
-		
 		GridLayout layoutGrupo = new GridLayout();
 	    layoutGrupo.numColumns = 4;
 		compo.setLayout(layoutCompo2);
@@ -251,7 +227,6 @@ public class Fuzzy {
 			regras[i] = new Combo(grpRegras, SWT.READ_ONLY);
 			
 			regras[i].pack();
-			//System.out.println(regras[i]);
 		}
 		
 		atualizarCombosRegras();
@@ -262,11 +237,145 @@ public class Fuzzy {
 		btnExecutar.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println(variaveis.get(0));
-				
+				if(varDestino.getSelectionIndex() < 0) {
+					MessageBox dialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+					dialog.setText("Erro");
+					dialog.setMessage("Não há variável de destino selecionada.");
+					dialog.open();
+				} else {
+					executarSistema();
+				}
 			}
 		});
 
+	}
+	
+	public void executarSistema() {
+		Shell janExecutar = new Shell(shell);
+		janExecutar.setText("Executar");
+		GridLayout novaJanGrid = new GridLayout();
+		novaJanGrid.numColumns = 3;
+		janExecutar.setLayout(novaJanGrid);
+		
+		GridLayout grpVarsGrid = new GridLayout();
+		grpVarsGrid.numColumns = 2;
+		Group grpVars = new Group(janExecutar, SWT.BORDER);
+		grpVars.setText("Variáveis");
+		grpVars.setLayout(grpVarsGrid);
+		Spinner[] entradas = new Spinner[variaveis.size()];
+		labelValor = null;
+		destinoMin = 0;
+		destinoMax = 0;
+		for(int i = 0; i < variaveis.size(); i++) {
+			if(i == varDestino.getSelectionIndex()) {
+				Label labelDestino = new Label(janExecutar, SWT.NONE);
+				labelDestino.setText(variaveis.get(i).getNome().getText());
+				labelValor = new Label(janExecutar, SWT.NONE);
+				labelValor.setText("?");
+				destinoMin = variaveis.get(i).getUnivMinimo().getSelection();
+				destinoMax = variaveis.get(i).getUnivMaximo().getSelection();
+			} else {
+				Label l = new Label(grpVars, SWT.NONE);
+				l.setText(variaveis.get(i).getNome().getText());
+				entradas[i] = new Spinner(grpVars, SWT.NONE);
+				configuraSpinner(entradas[i]);
+				entradas[i].setMinimum(variaveis.get(i).getUnivMinimo().getSelection());
+				entradas[i].setMaximum(variaveis.get(i).getUnivMaximo().getSelection());
+			}
+		}
+		
+		Button recalcular = new Button(grpVars, SWT.PUSH);
+		recalcular.setText("Recalcular");
+		recalcular.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent arg0) {
+				System.out.println(recalcularResultado(entradas, destinoMin, destinoMax));
+				DecimalFormat df = new DecimalFormat();
+				df.setMaximumFractionDigits(2);
+				labelValor.setText(""+df.format(recalcularResultado(entradas, destinoMin, destinoMax)/100));
+				labelValor.setSize(300, labelValor.getSize().y);
+				
+			}
+			
+		});
+		janExecutar.open();
+		
+	}
+	
+	private double recalcularResultado(Spinner[] entradas, int destinoMin, int destinoMax) {
+		String[] afirmacoesEntrada = regras[0].getItems();
+		String[] afirmacoesDestino = regras[3].getItems();
+		double[] pertinencias = new double[regras[0].getItemCount()];
+		int p = 0;
+		Variavel vD = null;
+		for (int i = 0; i < variaveis.size(); i++) {
+			if(i == varDestino.getSelectionIndex()) {
+				vD = variaveis.get(i);
+			} else {
+				System.out.println(entradas[i].getSelection());
+				int j = 0;
+				for (Conjunto c : variaveis.get(i).getConjuntos()) {
+					System.out.print(variaveis.get(i).afirmacoes()[j] + ":");
+					j++;
+					p++;
+					pertinencias[p] = c.pertinencia(entradas[i].getSelection());
+					System.out.println(pertinencias[p]);
+				}
+			}
+		}
+		
+		double[] implicacoes = new double[3];
+		
+		for(int i = 0; i < regras.length; i += 4) {
+			int indR1 = regras[i].getSelectionIndex(); //Nada = 0, conjuntos da primeira variável = 1 a 3...
+			int indOp = regras[i+1].getSelectionIndex(); //E = 0, Ou = 1
+			int indR2 = regras[i+2].getSelectionIndex();
+			int indDest = regras[i+3].getSelectionIndex();
+			if(indR1 == 0 || indDest == 0) {
+				break;
+			}
+			System.out.println("\nImplicação");
+			double novaImplicacao = executarRegra(indR1, indOp, indR2, indDest, pertinencias);
+			if(novaImplicacao > implicacoes[indDest - 1]) {
+				implicacoes[indDest - 1] = novaImplicacao;
+			}
+			for (double d : implicacoes) {
+				System.out.println(d);
+			}
+		}
+		//double[] pertinenciasFinais = new double[(destinoMax - destinoMin)/100 + 1];
+		double somaNumerador = 0.0;
+		double somaDenominador = 0.0;
+		
+		for(int i = destinoMin; i <= destinoMax; i += 100) {
+			double estaPertinencia = maiorPertinencia(i, vD, implicacoes);
+			somaNumerador += estaPertinencia * i;
+			somaDenominador += estaPertinencia;
+		}
+		if(somaDenominador == 0.0) {
+			return 0.0;
+		} else {
+			return somaNumerador / somaDenominador;
+		}
+	}
+
+	private double executarRegra(int indR1, int indOp, int indR2, int indDest, double[] pertinencias) {
+		if(indR2 == 0) {
+			//apenas foi preenchida o primeiro conjunto
+			return pertinencias[indR1];
+		}
+		if(indOp == 0) {
+			//E
+			return Math.min(pertinencias[indR1], pertinencias[indR2]);
+		}
+		//OU
+		return Math.min(pertinencias[indR1], pertinencias[indR2]);
+	}
+	
+	private double maiorPertinencia(int entrada, Variavel vd, double[] limites) {
+		double y1 = Math.min(limites[0], vd.getConjuntos()[0].pertinencia(entrada));
+		double y2 = Math.min(limites[1], vd.getConjuntos()[1].pertinencia(entrada));
+		double y3 = Math.min(limites[2], vd.getConjuntos()[2].pertinencia(entrada));
+		return Math.max(y1, Math.max(y2, y3));
 	}
 	
 	private void atualizarComboVarDestino() {
@@ -492,7 +601,7 @@ public class Fuzzy {
 	private String[] popularComboVarNormal() {
 		//afirmações como "Var 1 é pouco"
 		ArrayList<String> afirmacoes = new ArrayList<String>();
-		afirmacoes.add("Nada");
+		afirmacoes.add("Nenhum Conjunto");
 		for (Variavel v : variaveis) {
 			if (v.getAba().getText() != varDestino.getText()) {
 				afirmacoes.addAll(new ArrayList<String>(Arrays.asList(v.afirmacoes())));
@@ -508,7 +617,7 @@ public class Fuzzy {
 	private String[] popularComboVarDestino() {
 		//afirmações como "Var 1 é pouco"
 		ArrayList<String> afirmacoes = new ArrayList<String>();
-		afirmacoes.add("Nada");
+		afirmacoes.add("Nenhum Conjunto");
 		for (Variavel v : variaveis) {
 			if (v.getAba().getText() == varDestino.getText()) {
 				afirmacoes.addAll(new ArrayList<String>(Arrays.asList(v.afirmacoes())));
@@ -544,46 +653,6 @@ public class Fuzzy {
 	private BufferedImage geraGrafico(Spinner[] dados, String[] nomesConj) {
 		BufferedImage res = new BufferedImage(420, 320, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();
-		
-//		int[] valores = new int[dados.length];
-//		for (int i = 0; i < dados.length; i++) {
-//			System.out.println(dados[i].getSelection());
-//			String str = dados[i].getText();
-//			//System.out.println(text.getText() + "?");
-//			try	{
-//				valores[i] = Double.parseDouble(str);
-//			}
-//			catch(NumberFormatException e) {
-//				valores[i] = 0.0;
-//			}
-//		}
-//		Conjunto[] conjs = new Conjunto[qtConjuntos];
-//		for(int i = 0; i < qtConjuntos; i++) {
-//			//o construtor de conjunto força que o núcleo esteja contido no suporte
-//			conjs[i] = new Conjunto(nomesConj[i], 	dados[0 + (i*2)].getSelection(),
-//													dados[1 + (i*2)].getSelection(),
-//													dados[6 + (i*2)].getSelection(),
-//													dados[7 + (i*2)].getSelection());
-//			System.out.println(conjs[i]);
-//		}
-//		System.out.println();
-		
-//		for(int i = 0; i < 10000; i+= 100) {
-//			
-//			System.out.println("Pertinência para " + (double) (i)/100 + ": " + conjs[0].pertinencia(i));
-//		}
-		
-//		for(int i = 0; i < qtConjuntos; i++) {
-//			System.out.println("Pertinência para " + (i) + ": " + conjs[0].pertinencia(i));
-//		}
-		
-//		for(int i = 0; i < 400; i++) {
-//			//System.out.println(i + ", " + (int) Math.round(300*conjs[0].pertinencia(i)));
-//			int altura = 310 - (int) Math.round(300*conjs[0].pertinencia(i*25));
-//			raster.setPixel(10 + i, altura, new int[] {255, 255, 0});
-//			raster.setPixel(10 + i, altura-1, new int[] {255, 255, 0});
-//			raster.setPixel(10 + i, altura-2, new int[] {255, 255, 0});
-//		}
 		
 		try {
 			res.setData(raster);
@@ -657,8 +726,6 @@ public class Fuzzy {
 		} catch (Exception e) {
 	    	e.printStackTrace();
 		}
-		System.out.println(lines.get(0));
-		System.out.println(lines.get(1));
 		
 		int cursor = 0;
 		int qtVars = 0;
