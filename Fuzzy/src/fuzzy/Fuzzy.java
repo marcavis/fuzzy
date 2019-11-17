@@ -141,7 +141,13 @@ public class Fuzzy {
 		mntmFechar.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shell.close();
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK| SWT.CANCEL);
+				dialog.setText("Confirmação");
+				dialog.setMessage("Deseja realmente sair da aplicação?");
+				boolean ehPraSair = dialog.open() == 32;
+				if(ehPraSair) {
+					shell.close();
+				}
 			}
 		});
 		mntmFechar.setText("&Fechar");
