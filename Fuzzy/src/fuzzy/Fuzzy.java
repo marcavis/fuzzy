@@ -2,9 +2,17 @@ package fuzzy;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -117,7 +125,10 @@ public class Fuzzy {
 		mntmAbrir.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//shell.close();
+				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+				dialog.setFilterNames(new String[] { "Sistemas difusos (*.fzy)", "Todos os arquivos (*.*)" });
+				dialog.setFilterExtensions(new String[] { "*.fzy", "*.*" }); 
+				carregarEstado(dialog.open());
 			}
 		});
 		mntmAbrir.setText("&Abrir");
@@ -128,11 +139,7 @@ public class Fuzzy {
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 				dialog.setFilterNames(new String[] { "Sistemas difusos (*.fzy)", "Todos os arquivos (*.*)" });
-				dialog.setFilterExtensions(new String[] { "*.fzy", "*.*" }); // Windows
-			                                    // wild
-			                                    // cards
-			    //dialog.setFilterPath("c:\\"); // Windows path
-				
+				dialog.setFilterExtensions(new String[] { "*.fzy", "*.*" }); 
 			    dialog.setFileName("unknown.fzy");
 			    String caminhoSalvar = dialog.open();
 			    salvarEstado(caminhoSalvar);
@@ -169,7 +176,6 @@ public class Fuzzy {
 				int retorno = dialog.open();
 				event.doit = retorno == 32; //confirmou exclusão
 				if(event.doit) {
-					atualizarComboVarDestino();
 					removerVariavel(aba);
 				}
 			}
@@ -343,6 +349,19 @@ public class Fuzzy {
 		lblMuito.setText("Muito");
 		lblMuito.setLayoutData(layoutBtnDup);
 		
+		for (Text t : new Text[] {lblPouco, lblMdio, lblMuito}) {
+			t.addFocusListener(new FocusListener() {
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					atualizarCombosRegras();
+				}
+				@Override
+				public void focusGained(FocusEvent arg0) {
+					
+				}
+			});
+		}
+		
 		for (Spinner spinner : new Spinner[] {univMin, univMax}) {
 			spinner.addFocusListener(new FocusListener() {
 				@Override
@@ -351,7 +370,6 @@ public class Fuzzy {
 				}
 				@Override
 				public void focusGained(FocusEvent arg0) {
-					// TODO Auto-generated method stub
 					
 				}
 			});
@@ -418,7 +436,6 @@ public class Fuzzy {
 				}
 				@Override
 				public void focusGained(FocusEvent arg0) {
-					// TODO Auto-generated method stub
 					
 				}
 			});
@@ -454,6 +471,7 @@ public class Fuzzy {
 		}
 		if (indice > -1) {
 			variaveis.remove(indice);
+			atualizarComboVarDestino();
 		}
 	}
 	
@@ -586,11 +604,109 @@ public class Fuzzy {
 	}
 	
 	private boolean salvarEstado(String caminho) {
+		//é preciso garantir que haverá uma variável no arquivo salvo,
+		//pois a rotina de carregar arquivos não pode deletar todas as abas
+		if (variaveis.size() == 0) {
+			MessageBox dialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+			dialog.setText("Erro");
+			dialog.setMessage("Erro ao salvar - não há variáveis para serem salvas!");
+			dialog.open();
+			return false;
+		}
 		String saida = "";
 		for (Variavel v : variaveis) {
-			saida += "nomeVar:" + v.getNome() + "\n";
-			saida += "univ:" + v.getUnivMinimo() + ":" + v.getUnivMaximo() + "\n";
-//			saida += "temGrupo3:" + v.getAba()
+			saida += "nomeVar:" + v.getNome().getText() + "\n";
+			saida += "univ:" + v.getUnivMinimo().getSelection() + ":" + v.getUnivMaximo().getSelection() + "\n";
+			for (Text t : v.getNomesConjuntos()) {
+				saida += "grupo:" + t.getText() + "\n";
+			}
+			saida += "suporte1:" + v.getValores()[0].getSelection() + ":" + v.getValores()[1].getSelection() + "\n";
+			saida += "suporte2:" + v.getValores()[2].getSelection() + ":" + v.getValores()[3].getSelection() + "\n";
+			saida += "suporte3:" + v.getValores()[4].getSelection() + ":" + v.getValores()[5].getSelection() + "\n";
+			saida += "nucleo1:" + v.getValores()[6].getSelection() + ":" + v.getValores()[7].getSelection() + "\n";
+			saida += "nucleo2:" + v.getValores()[8].getSelection() + ":" + v.getValores()[9].getSelection() + "\n";
+			saida += "nucleo3:" + v.getValores()[10].getSelection() + ":" + v.getValores()[11].getSelection() + "\n";
+			saida += "fimvar\n";
+		}
+		saida += "fimvars\n";
+		saida += "destino:" + varDestino.getSelectionIndex() + "\n";
+		for (int i = 0; i < regras.length; i += 4) {
+			saida += "regra:" + regras[i].getSelectionIndex() + ":" + regras[i+1].getSelectionIndex() + ":";
+			saida += regras[i+2].getSelectionIndex() + ":" + regras[i+3].getSelectionIndex() + "\n";
+		}
+		
+		try (PrintWriter out = new PrintWriter(caminho)) {
+		    out.println(saida);
+		} catch (FileNotFoundException e) {
+			System.out.println("Falha ao salvar " + caminho);
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean carregarEstado(String caminho) {
+		System.out.println(tabFolder.getItems());
+		while (tabFolder.getItemCount() > 1) {
+			removerVariavel(tabFolder.getItem(0));
+			tabFolder.getItem(0).dispose();
+		}
+		List<String> lines = new ArrayList<String>();
+		try {
+			//URI uri = this.getClass().getResource(fileName).toURI();
+			lines = Files.readAllLines(Paths.get(caminho));
+		} catch (Exception e) {
+	    	e.printStackTrace();
+		}
+		System.out.println(lines.get(0));
+		System.out.println(lines.get(1));
+		
+		int cursor = 0;
+		int qtVars = 0;
+		//primeira passagem para verificar quantar variaveis criar
+		while(!lines.get(cursor).equals("fimvars")) {
+			if(lines.get(cursor).equals("fimvar")) {
+				qtVars++;
+				if(qtVars > 1) {
+					criarAba(tabFolder, variaveis);
+				}
+			}
+			cursor++;
+		}
+		
+		cursor = 0;
+		int indiceVar = 0;
+		while(!lines.get(cursor).equals("fimvars")) {
+			Variavel v = variaveis.get(indiceVar);
+			v.getNome().setText(lines.get(cursor).split(":")[1]);
+			cursor++;
+			v.getUnivMinimo().setSelection(Integer.parseInt(lines.get(cursor).split(":")[1]));
+			v.getUnivMaximo().setSelection(Integer.parseInt(lines.get(cursor).split(":")[2]));
+			cursor++;
+			v.getNomesConjuntos()[0].setText(lines.get(cursor).split(":")[1]);
+			v.getNomesConjuntos()[1].setText(lines.get(cursor + 1).split(":")[1]);
+			v.getNomesConjuntos()[2].setText(lines.get(cursor + 2).split(":")[1]);
+			cursor += 3;
+			for(int j = 0; j < v.getValores().length; j += 2) {
+				v.getValores()[j].setSelection(Integer.parseInt(lines.get(cursor).split(":")[1]));
+				v.getValores()[j+1].setSelection(Integer.parseInt(lines.get(cursor).split(":")[2]));
+				cursor++;
+			}
+			//ignorar o fimvar
+			cursor++;
+			indiceVar++;
+		}
+		cursor++;
+		int indiceVarDestino = Integer.parseInt(lines.get(cursor).split(":")[1]);
+		if (indiceVarDestino >= 0) {
+			varDestino.select(indiceVarDestino);
+		}
+		cursor++;
+		for (int i = 0; i < regras.length; i += 4) {
+			regras[i].select(Integer.parseInt(lines.get(cursor).split(":")[1]));
+			regras[i+1].select(Integer.parseInt(lines.get(cursor).split(":")[2]));
+			regras[i+2].select(Integer.parseInt(lines.get(cursor).split(":")[3]));
+			regras[i+3].select(Integer.parseInt(lines.get(cursor).split(":")[4]));
+			cursor++;
 		}
 		return true;
 	}
