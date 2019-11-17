@@ -113,7 +113,10 @@ public class Fuzzy {
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 				dialog.setFilterNames(new String[] { "Sistemas difusos (*.fzy)", "Todos os arquivos (*.*)" });
 				dialog.setFilterExtensions(new String[] { "*.fzy", "*.*" }); 
-				carregarEstado(dialog.open());
+				String caminhoAbrir = dialog.open();
+				if(caminhoAbrir != null) {
+					carregarEstado(dialog.open());
+				}
 			}
 		});
 		mntmAbrir.setText("&Abrir");
@@ -127,7 +130,9 @@ public class Fuzzy {
 				dialog.setFilterExtensions(new String[] { "*.fzy", "*.*" }); 
 			    dialog.setFileName("unknown.fzy");
 			    String caminhoSalvar = dialog.open();
-			    salvarEstado(caminhoSalvar);
+			    if(caminhoSalvar != null) {
+			    	salvarEstado(caminhoSalvar);
+			    }
 			}
 		});
 		mntmSalvar.setText("&Salvar");
@@ -293,17 +298,13 @@ public class Fuzzy {
 				df.setMaximumFractionDigits(2);
 				labelValor.setText(""+df.format(recalcularResultado(entradas, destinoMin, destinoMax)/100));
 				labelValor.setSize(300, labelValor.getSize().y);
-				
 			}
-			
 		});
 		janExecutar.open();
 		
 	}
 	
 	private double recalcularResultado(Spinner[] entradas, int destinoMin, int destinoMax) {
-		String[] afirmacoesEntrada = regras[0].getItems();
-		String[] afirmacoesDestino = regras[3].getItems();
 		double[] pertinencias = new double[regras[0].getItemCount()];
 		int p = 0;
 		Variavel vD = null;
