@@ -525,14 +525,21 @@ public class Fuzzy {
 			
 			configuraSpinner(estaVariavel[i]);
 			
-		}		
-		CLabel lblGrafico = new CLabel(thisComposite, SWT.BORDER);
+		}
+		
+		Button btnGrafico = new Button(thisComposite, SWT.PUSH);
+		btnGrafico.setText("Visualizar");
+		//CLabel lblGrafico = new CLabel(thisComposite, SWT.BORDER);
 		GridData imagemLayout = new GridData(); 
-		imagemLayout.widthHint = 400;
-		imagemLayout.heightHint = 320;
 		imagemLayout.horizontalSpan = 7;
 		imagemLayout.horizontalAlignment = SWT.CENTER;
-		lblGrafico.setLayoutData(imagemLayout);
+		btnGrafico.setLayoutData(imagemLayout);
+		btnGrafico.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				geraGrafico(variavelPai(tbtmNewItem));
+			}
+		});
+		
 		
 		for (int i = 0; i < estaVariavel.length; i++) {
 			estaVariavel[i].addFocusListener(new FocusListener() {
@@ -540,7 +547,6 @@ public class Fuzzy {
 				public void focusLost(FocusEvent arg0) {
 					try {
 						variavelPai(tbtmNewItem).atualizar();
-						geraGrafico(variavelPai(tbtmNewItem));
 //						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel,
 //								new String[] {lblPouco.getText(), lblMdio.getText(), lblMuito.getText()});
 //						ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
@@ -658,21 +664,18 @@ public class Fuzzy {
 		}
 	}
 	
-	private BufferedImage geraGrafico(Variavel v) {
-		BufferedImage res = new BufferedImage(420, 320, BufferedImage.TYPE_INT_RGB);
-		WritableRaster raster = res.getRaster();
-		
-		try {
-			res.setData(raster);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private void geraGrafico(Variavel v) {
+//		BufferedImage res = new BufferedImage(420, 320, BufferedImage.TYPE_INT_RGB);
+//		WritableRaster raster = res.getRaster();
+//		
+//		try {
+//			res.setData(raster);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
 		Grafico g = new Grafico(v);
-		//g.setVisible(true);
-		
-		
-		return g.getImage();
+		g.setVisible(true);
 	}
 	
 	private void carregaImagem(CLabel label, Image img) {

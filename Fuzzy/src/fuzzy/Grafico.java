@@ -39,7 +39,7 @@ public class Grafico extends JFrame {
         pack();
         setTitle("Gráfico");
         setLocationRelativeTo(null);
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     private XYDataset createDataset(Variavel v) {
