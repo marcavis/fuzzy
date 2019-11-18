@@ -49,22 +49,22 @@ public class Grafico extends JFrame {
     	Conjunto conj3 = v.getConjuntos()[2];
     	
         XYSeries series1 = new XYSeries(v.getConjuntos()[0].getNome());
-        series1.add(conj1.getSuporteMin(), 0);
-        series1.add(conj1.getNucleoMin(), 1);
-        series1.add(conj1.getNucleoMax(), 1);
-        series1.add(conj1.getSuporteMax(), 0);
+        series1.add(conj1.getSuporteMin()/100, 0);
+        series1.add(conj1.getNucleoMin()/100, 1);
+        series1.add(conj1.getNucleoMax()/100, 1);
+        series1.add(conj1.getSuporteMax()/100, 0);
         
         XYSeries series2 = new XYSeries(v.getConjuntos()[1].getNome());
-        series2.add(conj2.getSuporteMin(), 0);
-        series2.add(conj2.getNucleoMin(), 1);
-        series2.add(conj2.getNucleoMax(), 1);
-        series2.add(conj2.getSuporteMax(), 0);
+        series2.add(conj2.getSuporteMin()/100, 0);
+        series2.add(conj2.getNucleoMin()/100, 1);
+        series2.add(conj2.getNucleoMax()/100, 1);
+        series2.add(conj2.getSuporteMax()/100, 0);
         
         XYSeries series3 = new XYSeries(v.getConjuntos()[2].getNome());
-        series3.add(conj3.getSuporteMin(), 0);
-        series3.add(conj3.getNucleoMin(), 1);
-        series3.add(conj3.getNucleoMax(), 1);
-        series3.add(conj3.getSuporteMax(), 0);
+        series3.add(conj3.getSuporteMin()/100, 0);
+        series3.add(conj3.getNucleoMin()/100, 1);
+        series3.add(conj3.getNucleoMax()/100, 1);
+        series3.add(conj3.getSuporteMax()/100, 0);
 
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(series1);
