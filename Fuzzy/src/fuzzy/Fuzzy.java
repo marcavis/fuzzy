@@ -115,7 +115,7 @@ public class Fuzzy {
 				dialog.setFilterExtensions(new String[] { "*.fzy", "*.*" }); 
 				String caminhoAbrir = dialog.open();
 				if(caminhoAbrir != null) {
-					carregarEstado(dialog.open());
+					carregarEstado(caminhoAbrir);
 				}
 			}
 		});
@@ -540,11 +540,12 @@ public class Fuzzy {
 				public void focusLost(FocusEvent arg0) {
 					try {
 						variavelPai(tbtmNewItem).atualizar();
-						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel,
-								new String[] {lblPouco.getText(), lblMdio.getText(), lblMuito.getText()});
-						ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
-						Image graficoVarDestino = new Image(null, "temp/_graficovd.bmp");
-						carregaImagem(lblGrafico, graficoVarDestino);
+						geraGrafico(variavelPai(tbtmNewItem));
+//						BufferedImage imgGrafVarDestino = geraGrafico(estaVariavel,
+//								new String[] {lblPouco.getText(), lblMdio.getText(), lblMuito.getText()});
+//						ImageIO.write(imgGrafVarDestino, "bmp", new File("temp/_graficovd.bmp"));
+//						Image graficoVarDestino = new Image(null, "temp/_graficovd.bmp");
+//						carregaImagem(lblGrafico, graficoVarDestino);
 						
 					} catch (Exception f) {
 						f.printStackTrace();
@@ -657,7 +658,7 @@ public class Fuzzy {
 		}
 	}
 	
-	private BufferedImage geraGrafico(Spinner[] dados, String[] nomesConj) {
+	private BufferedImage geraGrafico(Variavel v) {
 		BufferedImage res = new BufferedImage(420, 320, BufferedImage.TYPE_INT_RGB);
 		WritableRaster raster = res.getRaster();
 		
@@ -666,7 +667,12 @@ public class Fuzzy {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return res;
+		
+		Grafico g = new Grafico(v);
+		//g.setVisible(true);
+		
+		
+		return g.getImage();
 	}
 	
 	private void carregaImagem(CLabel label, Image img) {
