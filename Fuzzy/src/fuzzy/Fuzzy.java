@@ -1,8 +1,5 @@
 package fuzzy;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -12,10 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
@@ -26,7 +20,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -676,16 +669,6 @@ public class Fuzzy {
 		
 		Grafico g = new Grafico(v);
 		g.setVisible(true);
-	}
-	
-	private void carregaImagem(CLabel label, Image img) {
-		label.setBackground(img);
-		label.setBounds(
-				label.getBounds().x,
-				label.getBounds().y,
-				img.getImageData().width,
-				img.getImageData().height
-				);
 	}
 	
 	private boolean salvarEstado(String caminho) {
