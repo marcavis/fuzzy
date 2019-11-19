@@ -610,7 +610,7 @@ public class Fuzzy {
 		ArrayList<String> afirmacoes = new ArrayList<String>();
 		afirmacoes.add("Nenhum Conjunto");
 		for (Variavel v : variaveis) {
-			if (v.getAba().getText() != varDestino.getText()) {
+			if (!v.getAba().getText().equals(varDestino.getText())) {
 				afirmacoes.addAll(new ArrayList<String>(Arrays.asList(v.afirmacoes())));
 			}
 		}
@@ -626,7 +626,7 @@ public class Fuzzy {
 		ArrayList<String> afirmacoes = new ArrayList<String>();
 		afirmacoes.add("Nenhum Conjunto");
 		for (Variavel v : variaveis) {
-			if (v.getAba().getText() == varDestino.getText()) {
+			if (v.getAba().getText().equals(varDestino.getText())) {
 				afirmacoes.addAll(new ArrayList<String>(Arrays.asList(v.afirmacoes())));
 			}
 		}
